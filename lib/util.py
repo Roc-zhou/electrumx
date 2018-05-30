@@ -112,9 +112,9 @@ def deep_getsizeof(obj):
     return size(obj)
 
 
-def subclasses(base_class, strict=True):
+def subclasses(base_class, strict=True): #返回对象所有子模块并排好序[list]
     '''Return a list of subclasses of base_class in its module.'''
-    def select(obj):
+    def select(obj): #是否是class,是否继承于obj,且不是原始的obj
         return (inspect.isclass(obj) and issubclass(obj, base_class) and
                 (not strict or obj != base_class))
 

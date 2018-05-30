@@ -14,7 +14,7 @@ import time
 from functools import partial
 
 
-class ServerBase(object):
+class ServerBase(object): #使用协程（event）来处理单线程
     '''Base class server implementation.
 
     Derived classes are expected to:
@@ -40,7 +40,7 @@ class ServerBase(object):
         self.env = env
 
         # Sanity checks
-        if sys.version_info < self.PYTHON_MIN_VERSION:
+        if sys.version_info < self.PYTHON_MIN_VERSION: #比较系统Python的版本（是否小于3.6）
             mvs = '.'.join(str(part) for part in self.PYTHON_MIN_VERSION)
             raise RuntimeError('Python version >= {} is required'.format(mvs))
 
@@ -56,7 +56,7 @@ class ServerBase(object):
         asyncio.set_event_loop_policy(self.env.loop_policy)
 
         # Trigger this event to cleanly shutdown
-        self.shutdown_event = asyncio.Event()
+        self.shutdown_event = asyncio.Event() # 初始化一个event,用于处理多个协程同步工作
 
     async def start_servers(self):
         '''Override to perform initialization that requires the event loop,

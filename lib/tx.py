@@ -36,7 +36,7 @@ from lib.util import (cachedproperty, unpack_int32_from, unpack_int64_from,
                       unpack_uint64_from)
 
 
-class Tx(namedtuple("Tx", "version inputs outputs locktime")):
+class Tx(namedtuple("Tx", "version inputs outputs locktime")): # 父类是一个包含version、inputs、outputs、locktime的类
     '''Class representing a transaction.'''
 
     @cachedproperty
@@ -46,10 +46,10 @@ class Tx(namedtuple("Tx", "version inputs outputs locktime")):
     # FIXME: add hash as a cached property?
 
 
-class TxInput(namedtuple("TxInput", "prev_hash prev_idx script sequence")):
+class TxInput(namedtuple("TxInput", "prev_hash prev_idx script sequence")):# 父类是一个包含prev_hash、prev_idx、script、lsequence的类(__int__返回一个元组)
     '''Class representing a transaction input.'''
 
-    ZERO = bytes(32)
+    ZERO = bytes(32) #返回一个用给定大小和数据初始化的不可变字节对象
     MINUS_1 = 4294967295
 
     @cachedproperty
@@ -68,7 +68,7 @@ class TxOutput(namedtuple("TxOutput", "value pk_script")):
     pass
 
 
-class Deserializer(object):
+class Deserializer(object): # 解析数据[16进制数据]
     '''Deserializes blocks into transactions.
 
     External entry points are read_tx(), read_tx_and_hash(),
@@ -78,13 +78,13 @@ class Deserializer(object):
     millions of times during sync.
     '''
 
-    def __init__(self, binary, start=0):
-        assert isinstance(binary, bytes)
+    def __init__(self, binary, start=0): # 比特币的头长度为80，如果要单独解析body部分需要先加80，后面的部分才是body部分
+        assert isinstance(binary, bytes) # 传入的字符串是一个bytes[二进制]
         self.binary = binary
         self.binary_length = len(binary)
         self.cursor = start
 
-    def read_tx(self):
+    def read_tx(self): #返回一个不可篡改的class类
         '''Return a deserialized transaction.'''
         return Tx(
             self._read_le_int32(),  # version
@@ -139,7 +139,7 @@ class Deserializer(object):
         self.cursor += 1
         return self.binary[cursor]
 
-    def _read_nbytes(self, n):
+    def _read_nbytes(self, n): #解析多节数据
         cursor = self.cursor
         self.cursor = end = cursor + n
         assert self.binary_length >= end
@@ -159,9 +159,9 @@ class Deserializer(object):
             return self._read_le_uint32()
         return self._read_le_uint64()
 
-    def _read_le_int32(self):
-        result, = unpack_int32_from(self.binary, self.cursor)
-        self.cursor += 4
+    def _read_le_int32(self): #unpack_uint32_from方法（buffer,offset）解析数据[4]
+        result, = unpack_int32_from(self.binary, self.cursor) #解析数据
+        self.cursor += 4 #解析完成后，对应记录数据解析的位置
         return result
 
     def _read_le_int64(self):
@@ -251,12 +251,12 @@ class DeserializerSegWit(Deserializer):
 
 
 class DeserializerAuxPow(Deserializer):
-    VERSION_AUXPOW = (1 << 8)
+    VERSION_AUXPOW = (1 << 8) # 1 * 2^8
 
     def read_header(self, height, static_header_size):
         '''Return the AuxPow block header bytes'''
         start = self.cursor
-        version = self._read_le_uint32()
+        version = self._read_le_uint32() # 解析header版本
         if version & self.VERSION_AUXPOW:
             # We are going to calculate the block size then read it as bytes
             self.cursor = start

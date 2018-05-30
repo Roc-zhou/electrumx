@@ -26,23 +26,23 @@ class EnvBase(object):
         self.loop_policy = self.event_loop_policy()
 
     @classmethod
-    def default(cls, envvar, default):
+    def default(cls, envvar, default):#获取非必须的环境变量(可以返回一个默认的)
         return environ.get(envvar, default)
 
     @classmethod
-    def boolean(cls, envvar, default):
+    def boolean(cls, envvar, default): #是否存在该环境变量（有默认值也当做存在）[Boolean]
         default = 'Yes' if default else ''
         return bool(cls.default(envvar, default).strip())
 
     @classmethod
-    def required(cls, envvar):
+    def required(cls, envvar): #获取必的须环境
         value = environ.get(envvar)
         if value is None:
             raise cls.Error('required envvar {} not set'.format(envvar))
         return value
 
     @classmethod
-    def integer(cls, envvar, default):
+    def integer(cls, envvar, default):#获取非必须的环境变量(可以返回一个默认的)【int类型的value,或者None】
         value = environ.get(envvar)
         if value is None:
             return default
@@ -53,7 +53,7 @@ class EnvBase(object):
                             .format(envvar, value))
 
     @classmethod
-    def custom(cls, envvar, default, parse):
+    def custom(cls, envvar, default, parse): # 如果环境变量envvar不存在，就返回default，否则返回parse(environ.get(envvar))
         value = environ.get(envvar)
         if value is None:
             return default
@@ -64,7 +64,7 @@ class EnvBase(object):
                             .format(envvar, value)) from e
 
     @classmethod
-    def obsolete(cls, envvars):
+    def obsolete(cls, envvars): #检查环境（os.environ）
         bad = [envvar for envvar in envvars if environ.get(envvar)]
         if bad:
             raise cls.Error('remove obsolete environment variables {}'

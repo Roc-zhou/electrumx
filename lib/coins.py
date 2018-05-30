@@ -79,18 +79,18 @@ class Coin(object):
     PEERS = []
 
     @classmethod
-    def lookup_coin_class(cls, name, net):
+    def lookup_coin_class(cls, name, net): #返回类似这种数据 -》 {'NAME':name,'NET':net,'TX_COUNT':'','TX_COUNT_HEIGHT':'','TX_PER_BLOCK':''}
         '''Return a coin class given name and network.
 
         Raise an exception if unrecognised.'''
         req_attrs = ['TX_COUNT', 'TX_COUNT_HEIGHT', 'TX_PER_BLOCK']
-        for coin in util.subclasses(Coin):
+        for coin in util.subclasses(Coin): # 循环Coin所有子模块[list]
             if (coin.NAME.lower() == name.lower() and
-                    coin.NET.lower() == net.lower()):
+                    coin.NET.lower() == net.lower()):#如果传入的环境变量值在类Coin中存在
                 coin_req_attrs = req_attrs.copy()
                 missing = [attr for attr in coin_req_attrs
                            if not hasattr(coin, attr)]
-                if missing:
+                if missing: # 如果当前循环的coin中没有['TX_COUNT', 'TX_COUNT_HEIGHT', 'TX_PER_BLOCK']这些属性
                     raise CoinError('coin {} missing {} attributes'
                                     .format(name, missing))
                 return coin

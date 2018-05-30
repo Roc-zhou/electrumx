@@ -5,7 +5,7 @@
 # See the file "LICENCE" for information about the copyright
 # and warranty status of this software.
 
-import asyncio
+import asyncio #TODO:asyncio
 import itertools
 import json
 import os
@@ -28,7 +28,7 @@ from server.daemon import DaemonError
 from server.mempool import MemPool
 from server.peers import PeerManager
 from server.session import LocalRPC, BAD_REQUEST, DAEMON_ERROR
-from server.version import VERSION
+from server.version import VERSION #1.4.3
 
 
 class SessionGroup(object):
@@ -36,10 +36,10 @@ class SessionGroup(object):
     def __init__(self, gid):
         self.gid = gid
         # Concurrency per group
-        self.semaphore = asyncio.Semaphore(20)
+        self.semaphore = asyncio.Semaphore(20) #限制并发数为20个
 
 
-class Controller(ServerBase):
+class Controller(ServerBase): #父类是一个协程
     '''Manages the client servers, a mempool, and a block processor.
 
     Servers are started immediately the block processor first catches
@@ -62,15 +62,15 @@ class Controller(ServerBase):
                          f'{self.PROTOCOL_MIN}-{self.PROTOCOL_MAX}')
         self.logger.info(f'event loop policy: {env.loop_policy}')
 
-        self.coin = env.coin
+        self.coin = env.coin #类似 -》 {'NAME':coin_name,'NET':network,'TX_COUNT':'','TX_COUNT_HEIGHT':'','TX_PER_BLOCK':'',REORG_LIMIT:''}
         self.servers = {}
-        self.tasks = TaskSet()
-        self.sessions = set()
-        self.cur_group = SessionGroup(0)
+        self.tasks = TaskSet() #TODO:TaskSet?
+        self.sessions = set() #TODO:set?
+        self.cur_group = SessionGroup(0) # {gid:0,semaphore:class[限制并发数-》20]}
         self.txs_sent = 0
         self.next_log_sessions = 0
-        self.state = self.CATCHING_UP
-        self.max_sessions = env.max_sessions
+        self.state = self.CATCHING_UP #0
+        self.max_sessions = env.max_sessions # 获取环境变量和配置文件中二者最小的sessions值
         self.low_watermark = self.max_sessions * 19 // 20
         self.max_subs = env.max_subs
         # Cache some idea of room to avoid recounting on each subscription
@@ -98,7 +98,7 @@ class Controller(ServerBase):
     @classmethod
     def short_version(cls):
         '''Return e.g. "1.2" for ElectrumX 1.2'''
-        return cls.VERSION.split()[-1]
+        return cls.VERSION.split()[-1] # 程序版本('ElectrumX 1.4.3' -> 1.4.3)
 
     def server_features(self):
         '''Return the server features dictionary.'''
