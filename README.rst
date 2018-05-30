@@ -17,3 +17,5 @@ Documentation
 =============
 
 See `readthedocs <https://electrumx.readthedocs.io/>`_.
+
+remark : 比特币系列解析方法[交易解析文档规则存放在“存档“里面]
